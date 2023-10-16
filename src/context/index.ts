@@ -1,5 +1,4 @@
 import { logger } from "@bogeychan/elysia-logger";
-import { Logger } from "@bogeychan/elysia-logger/types";
 import { cron } from "@elysiajs/cron";
 import { HoltLogger } from "@tlscipher/holt";
 import { bethStack } from "beth-stack/elysia";
@@ -42,19 +41,19 @@ export const ctx = new Elysia({
   .use(bethStack())
   .use(logger(loggerConfig))
   .use(
-    // @ts-expect-error
+    // @ts-expect-error asd
     config.env.NODE_ENV === "development"
       ? new HoltLogger().getLogger()
       : (a) => a,
   )
   .use(
-    // @ts-expect-error
+    // @ts-expect-error asd
     config.env.DATABASE_CONNECTION_TYPE === "local-replica"
       ? cron({
           name: "heartbeat",
           pattern: "*/2 * * * * *",
           run() {
-            const now = performance.now();
+            // const now = performance.now();
             // console.log("Syncing database...");
             void client.sync().then(() => {
               // console.log(`Database synced in ${performance.now() - now}ms`);
@@ -78,7 +77,7 @@ export const ctx = new Elysia({
       log.debug(`Request received: ${request.method}: ${request.url}`);
     }
   })
-  .onResponse(({ log, request, set }) => {
+  .onResponse(({ log, request }) => {
     if (log && config.env.NODE_ENV === "production") {
       log.debug(`Response sent: ${request.method}: ${request.url}`);
     }

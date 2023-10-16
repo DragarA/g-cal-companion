@@ -2,24 +2,23 @@ import { staticPlugin } from "@elysiajs/static";
 // import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 import { config } from "./config";
-import { ctx } from "./context";
 import { api } from "./controllers/*";
 import { pages } from "./pages/*";
 
 const app = new Elysia()
   // .use(swagger())
-  // @ts-expect-error
+  // @ts-expect-error asd
   .use(staticPlugin())
   .use(api)
   .use(pages)
-  .onStart(({ log }) => {
+  .onStart(() => {
     if (config.env.NODE_ENV === "development") {
       void fetch("http://localhost:3001/restart");
       // log.debug("🦊 Triggering Live Reload");
       console.log("🦊 Triggering Live Reload");
     }
   })
-  .onError(({ code, error, request, log }) => {
+  .onError(({ error }) => {
     // log.error(` ${request.method} ${request.url}`, code, error);
     console.error(error);
   })

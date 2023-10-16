@@ -1,17 +1,12 @@
 import { OAuthRequestError } from "@lucia-auth/oauth";
-import { Elysia, t } from "elysia";
-import { LuciaError } from "lucia";
+import { eq } from "drizzle-orm";
+import { Elysia } from "elysia";
 import { parseCookie, serializeCookie } from "lucia/utils";
 import { googleAuth } from "../auth";
 import { config } from "../config";
 import { ctx } from "../context";
+import { user as dbUser } from "../db/primary/schema";
 import { redirect, syncIfLocal } from "../lib";
-
-class DuplicateEmailError extends Error {
-  constructor() {
-    super("Duplicate email");
-  }
-}
 
 export const authController = new Elysia({
   prefix: "/auth",
@@ -59,11 +54,11 @@ export const authController = new Elysia({
 
     set.redirect = url.toString();
   })
-  .get("/google/callback", async ({ set, query, headers, auth, log }) => {
+  .get("/callback/google", async ({ set, query, headers, auth, log, db }) => {
     const { state, code } = query;
 
-    const cookies = parseCookie(headers["cookie"] || "");
-    const state_cookie = cookies["google_auth_state"];
+    const cookies = parseCookie(headers.cookie || "");
+    const state_cookie = cookies.google_auth_state;
 
     if (!state_cookie || !state || state_cookie !== state || !code) {
       set.status = "Unauthorized";
@@ -71,25 +66,38 @@ export const authController = new Elysia({
     }
 
     try {
-      const { createUser, getExistingUser, googleUser } =
+      const { createUser, getExistingUser, googleUser, googleTokens } =
         await googleAuth.validateCallback(code);
+
+      console.log(googleTokens);
 
       const getUser = async () => {
         const existingUser = await getExistingUser();
 
         if (existingUser) {
+          await db
+            .update(dbUser)
+            .set({
+              access_token: googleTokens.accessToken,
+            })
+            .where(eq(dbUser.id, existingUser.id))
+            .returning();
+
           return existingUser;
         }
 
-        const user = await createUser({
+        const usr = await createUser({
           attributes: {
             name: googleUser.name,
             email: googleUser.email ?? null,
             picture: googleUser.picture,
+            access_token: googleTokens.accessToken,
+            refresh_token: googleTokens.refreshToken,
+            token_expires_in: googleTokens.accessTokenExpiresIn,
           },
         });
 
-        return user;
+        return usr;
       };
 
       const user = await getUser();
@@ -107,7 +115,7 @@ export const authController = new Elysia({
           set,
           headers,
         },
-        "/new-user",
+        "/dashboard",
       );
     } catch (e) {
       log.error(e, "Error signing in with Google");

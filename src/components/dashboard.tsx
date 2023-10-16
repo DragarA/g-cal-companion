@@ -1,32 +1,20 @@
-import { PropsWithChildren } from "beth-stack/jsx";
+import { type PropsWithChildren } from "beth-stack/jsx";
 
 export function Dashboard({ children }: PropsWithChildren) {
   return (
     <div class="flex h-screen w-full flex-col md:flex-row">
       <nav class="flex h-full min-w-[18rem] flex-col bg-gray-800 p-5 text-white lg:w-64">
-        <h1 class="mb-4 text-4xl">Dashboard</h1>
         <ul class="flex-grow space-y-6">
           <DashBoardItem text="Home" logo="i-lucide-home" href="/dashboard" />
           <DashBoardItem
-            text="Tickets"
-            logo="i-lucide-messages-square"
-            href="/tickets"
+            text="Import"
+            logo="i-lucide-import"
+            href="/event-import"
           />
           <DashBoardItem
-            text="Organization"
-            logo="i-lucide-user-circle-2"
-            href="/organization"
-          />
-          <DashBoardItem
-            text="Settings"
-            logo="i-lucide-settings"
-            href="/settings"
-          />
-          <DashBoardItem
-            text="Need Help?"
-            logo="i-lucide-mail-question"
-            href="https://twitter.com/ethanniser"
-            newTab
+            text="Events"
+            logo="i-lucide-calendar-days"
+            href="/events"
           />
           <DashBoardItem
             text="Sign Out"
@@ -34,9 +22,8 @@ export function Dashboard({ children }: PropsWithChildren) {
             href="/api/auth/signout"
           />
         </ul>
-        <div class="text-2xl font-bold">BETH SAAS</div>
       </nav>
-      <div class="h-full w-full">{children}</div>
+      <div class="h-screen w-full">{children}</div>
     </div>
   );
 }

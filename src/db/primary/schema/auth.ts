@@ -1,22 +1,28 @@
 import { relations } from "drizzle-orm";
 import { blob, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { organizations } from ".";
+import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
+import { events } from ".";
 
 export const user = sqliteTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email"),
   picture: text("picture").notNull(),
-  organization_id: integer("organization_id"),
+  refresh_token: text("refresh_token"),
+  access_token: text("access_token").notNull(),
+  token_expires_in: integer("token_expires_in").notNull(),
   // other user attributes
 });
 
-export const userRelations = relations(user, ({ one }) => ({
-  organization: one(organizations, {
-    fields: [user.organization_id],
-    references: [organizations.id],
-  }),
+export const userRelations = relations(user, ({ many }) => ({
+  events: many(events),
 }));
+
+export type User = typeof user.$inferSelect;
+export type InsertUser = typeof user.$inferInsert;
+
+export const insertUserSchema = createInsertSchema(user);
+export const selectUserSchema = createSelectSchema(user);
 
 export const session = sqliteTable("user_session", {
   id: text("id").primaryKey(),

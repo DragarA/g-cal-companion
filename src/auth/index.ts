@@ -1,6 +1,6 @@
 import { libsql } from "@lucia-auth/adapter-sqlite";
 import { google } from "@lucia-auth/oauth/providers";
-import { lucia, Middleware } from "lucia";
+import { lucia, type Middleware } from "lucia";
 import { config } from "../config";
 import { client } from "../db/primary";
 
@@ -53,15 +53,22 @@ export const auth = lucia({
       picture: data.picture,
       email: data.email,
       id: data.id,
-      organization_id: data.organization_id,
     };
   },
 });
 
 export type Auth = typeof auth;
 
+const scopes = [
+  "https://www.googleapis.com/auth/userinfo.email",
+  "https://www.googleapis.com/auth/userinfo.profile",
+  "https://www.googleapis.com/auth/calendar",
+];
+
 export const googleAuth = google(auth, {
   clientId: config.env.GOOGLE_CLIENT_ID,
   clientSecret: config.env.GOOGLE_CLIENT_SECRET,
-  redirectUri: `${config.env.HOST_URL}api/auth/google/callback`,
+  redirectUri: `${config.env.HOST_URL}api/auth/callback/google`,
+  accessType: "online",
+  scope: scopes,
 });

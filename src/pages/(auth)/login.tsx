@@ -1,8 +1,5 @@
-import { OAuthRequestError } from "@lucia-auth/oauth";
 import Elysia from "elysia";
-import { parseCookie, serializeCookie } from "lucia/utils";
 import { BaseHtml } from "../../components/base";
-import { config } from "../../config";
 import { ctx } from "../../context";
 
 export const login = new Elysia().use(ctx).get("/login", async (ctx) => {

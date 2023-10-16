@@ -5,7 +5,9 @@ declare namespace Lucia {
     name: string;
     picture: string;
     email?: string | null;
-    organization_id?: number | null;
+    access_token: string;
+    refresh_token?: string | null;
+    token_expires_in?: number;
   };
   type DatabaseSessionAttributes = {};
 }

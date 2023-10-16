@@ -1,12 +1,10 @@
-import { Suspense } from "beth-stack/jsx";
 import { Elysia } from "elysia";
-import { authed } from "../auth/middleware";
 import { BaseHtml } from "../components/base";
 import { ctx } from "../context";
 
 export const index = new Elysia()
   .use(ctx)
-  .get("/", async ({ html, session, db }) => {
+  .get("/", async ({ html, session }) => {
     return html(() => (
       <BaseHtml>
         <div class="flex flex-col items-center py-3">

@@ -49,6 +49,8 @@ const config = {
 
     // This rule doesn't seem to be working properly
     "@typescript-eslint/prefer-nullish-coalescing": "off",
+    "@typescript-eslint/consistent-type-definitions": "off",
+    semi: 'off',
   },
 };
 

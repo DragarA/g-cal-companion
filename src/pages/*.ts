@@ -1,17 +1,15 @@
 import Elysia from "elysia";
 import { authGroup } from "./(auth)/*";
-import { orgId } from "./<organizationId>/*";
 import { dashboard } from "./dashboard";
+import { eventDetails } from "./event-details";
+import { eventImport } from "./event-import";
+import { events } from "./events";
 import { index } from "./index";
-import { newUser } from "./new-user";
-import { organization } from "./organization";
-import { ticketsRoute } from "./tickets";
 
 export const pages = new Elysia()
   .use(index)
-  .use(ticketsRoute)
-  .use(orgId)
-  .use(organization)
   .use(authGroup)
-  .use(newUser)
-  .use(dashboard);
+  .use(eventImport)
+  .use(dashboard)
+  .use(events)
+  .use(eventDetails);
