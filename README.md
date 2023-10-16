@@ -1,3 +1,5 @@
+Handy tool for private use, testing the capabilities of the BETH stack. 
+
 ### To run locally:
 
 1. `bun install`
