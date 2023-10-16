@@ -11,15 +11,23 @@ export default function EventDetailList({ events }: { events: Event[] }) {
       ) : (
         <ul class="space-y-6">
           {events.map((event) => (
-            <li class="flex items-center justify-between rounded border p-5 shadow-lg">
-              <div class="flex items-center space-x-6">
-                <div>
-                  <p class="text-xl font-bold" safe>
+            <li class="flex w-full items-center justify-between rounded border p-5 shadow-lg">
+              <div class="flex w-full items-center space-x-6">
+                <div class="">
+                  <p class="w-full text-xl font-bold" safe>
                     {event.name}
                   </p>
-                  <p class="text-lg text-gray-700" safe>
-                    {moment(event.date).format("MMMM Do YYYY, HH:mm:ss")}
+                </div>
+                <div class="grow text-right">
+                  <p class="text-right text-lg text-gray-700" safe>
+                    {moment(event.date)
+                      .local(true)
+                      .format("MMMM Do YYYY, HH:mm")}
                   </p>
+                  <span class="text-right text-lg text-gray-700">
+                    Duration:
+                  </span>{" "}
+                  <strong>{event.duration}h</strong>
                 </div>
               </div>
             </li>

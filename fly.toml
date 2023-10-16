@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for beth-support on 2023-09-24T21:09:04-05:00
+# fly.toml app configuration file generated for g-cal-companion on 2023-10-16T16:57:41+02:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "beth-support"
+app = "g-cal-companion"
 primary_region = "ord"
 
 [build]

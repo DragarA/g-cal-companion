@@ -4,7 +4,7 @@ export default function EventList({
   dateTo,
   search,
 }: {
-  events: { name: string; numberOfOccurences: number }[];
+  events: { name: string; totalDuration: number }[];
   dateFrom: string;
   dateTo: string;
   search: string;
@@ -26,14 +26,16 @@ export default function EventList({
               <div class="flex items-center space-x-6">
                 <div>
                   <a
-                    href={`/event-details?name=${event.name}&dateFrom=${dateFrom}&dateTo=${dateTo}&search=${search}`}
+                    href={`/event-details?name=${encodeURIComponent(
+                      event.name,
+                    )}&dateFrom=${dateFrom}&dateTo=${dateTo}&search=${search}`}
                   >
                     <p class="text-xl font-bold" safe>
                       {event.name}
                     </p>
                   </a>
                   <p class="text-lg text-gray-700" safe>
-                    {event.numberOfOccurences}
+                    {event.totalDuration}
                   </p>
                 </div>
               </div>
@@ -47,8 +49,7 @@ export default function EventList({
                 </p>
                 <p class="text-lg text-gray-700" safe>
                   {events.reduce(
-                    (accumulator, event) =>
-                      accumulator + event.numberOfOccurences,
+                    (accumulator, event) => accumulator + event.totalDuration,
                     0,
                   )}
                 </p>

@@ -1,6 +1,7 @@
 import { and, eq, gte, like, lte } from "drizzle-orm";
 import Elysia, { t } from "elysia";
 import { google } from "googleapis";
+import moment from "moment";
 import EventList from "../components/event-list";
 import { ctx } from "../context";
 import { events, user } from "../db/primary/schema";
@@ -51,18 +52,35 @@ export const eventController = new Elysia({
 
       const eventListResponse = await calendar.events.list({
         calendarId: "primary",
-        timeMin: new Date(2023, 9, 1).toISOString(),
-        timeMax: new Date(2023, 10, 1).toISOString(),
+        timeMin: dateFrom.toISOString(),
+        timeMax: dateTo.toISOString(),
         singleEvents: true,
       });
 
       const eventList = eventListResponse?.data?.items;
 
-      console.log(eventList);
       if (!eventList?.length) {
         set.status = "Not Found";
         return "No events found.";
       }
+
+      const dbEventList = eventList
+        .filter(
+          (event) =>
+            event.start?.dateTime != null &&
+            event.end?.dateTime != null &&
+            event.summary?.length,
+        )
+        .map((event) => ({
+          name: event.summary!,
+          date: moment(event.start!.dateTime).toDate(),
+          duration: moment
+            .duration(
+              moment(event.end!.dateTime).diff(moment(event.start!.dateTime)),
+            )
+            .asHours(),
+          user_id: session.user.id,
+        }));
 
       await db
         .delete(events)
@@ -73,16 +91,6 @@ export const eventController = new Elysia({
             lte(events.date, dateTo),
           ),
         );
-
-      const dbEventList = eventList
-        .filter(
-          (event) => event.start?.dateTime != null && event.summary?.length,
-        )
-        .map((event) => ({
-          name: event.summary!,
-          date: new Date(event.start!.dateTime!),
-          user_id: session.user.id,
-        }));
 
       await db.insert(events).values(dbEventList);
 
@@ -124,16 +132,16 @@ export const eventController = new Elysia({
 
       eventList.map((event) => {
         if (!eventsWithCounts[event.name]) {
-          eventsWithCounts[event.name] = 1;
+          eventsWithCounts[event.name] = event.duration;
         } else {
-          eventsWithCounts[event.name]++;
+          eventsWithCounts[event.name] += event.duration;
         }
       });
 
       const mappedEvents = Object.entries(eventsWithCounts)?.map(
         (eventRecord) => ({
           name: eventRecord[0],
-          numberOfOccurences: eventRecord[1],
+          totalDuration: eventRecord[1],
         }),
       );
 

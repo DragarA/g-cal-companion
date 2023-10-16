@@ -7,6 +7,7 @@ export const events = sqliteTable("events", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
   date: integer("date", { mode: "timestamp" }).notNull(),
+  duration: integer("duration").notNull(),
   user_id: text("user_id").notNull(),
 });
 
